@@ -3184,12 +3184,12 @@ function renderDiet() {
   // 初始体重 & 变化量
   const initialW = allDays[0];          // 最早一条记录
   const currentW = lastW;               // 最新一条记录
-  let diffText = "", diffColor = "#999";
+  let diffNum = "--", diffLabel = "", diffColor = "#999";
   if (initialW && currentW) {
     const diff = Math.round((initialW.value - currentW.value) * 10) / 10;
-    if (diff > 0) { diffText = "已减重 " + diff + " kg"; diffColor = "#34A853"; }
-    else if (diff < 0) { diffText = "已增重 " + Math.abs(diff) + " kg"; diffColor = "#EA4335"; }
-    else { diffText = "无变化"; diffColor = "#999"; }
+    if (diff > 0) { diffNum = diff + " kg"; diffLabel = "已减重"; diffColor = "#34A853"; }
+    else if (diff < 0) { diffNum = Math.abs(diff) + " kg"; diffLabel = "已增重"; diffColor = "#EA4335"; }
+    else { diffNum = "无变化"; diffColor = "#999"; }
   }
 
   const mealHtml = MEALS.map(m => {
@@ -3259,7 +3259,8 @@ function renderDiet() {
         </div>
         <div style="flex:1;min-width:130px;background:#F5F1FC;border-radius:12px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
           <span style="font-size:11px;color:#7B6BA6;white-space:nowrap">当前变化</span>
-          <div style="font-size:18px;font-weight:800;color:${diffColor};line-height:1.2;margin:4px 0;white-space:nowrap">${diffText || "--"}</div>
+          <div style="font-size:20px;font-weight:800;color:${diffColor};line-height:1.2;margin:2px 0;white-space:nowrap">${diffNum}</div>
+          ${diffLabel ? `<span style="font-size:11px;color:${diffColor};white-space:nowrap">${diffLabel}</span>` : ""}
         </div>
       </div>
 
