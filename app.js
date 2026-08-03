@@ -3842,6 +3842,7 @@ function renderWeekly() {
         <input class="input" id="wWeek" placeholder="如 2026年第30周">
         <input class="input" id="wWeight" type="number" step="0.1" placeholder="体重变化kg(涨为负)" style="max-width:140px">
       </div>
+      <div id="wWeightHint" style="font-size:11px;color:#8E82A8;margin:-4px 0 8px"></div>
       <textarea class="textarea" id="wSummary" placeholder="本周收获、问题、下周计划..." style="min-height:100px"></textarea>
       <button class="btn btn-block" style="margin-top:8px" onclick="weeklyAdd()">保存</button>
     </div>
@@ -3860,6 +3861,23 @@ renderWeekly = function() {
   return html;
 };
 PAGES.weekly = renderWeekly;
+
+// 计算某时间区间内的体重变化：以“周初基准(周一之前最近一条/否则本周首条)”对比“区间最末一条”
+// 返回 { delta(正=减重 / 负=增重) } 或 null（无数据）
+function weekWeightChange(ws, we) {
+  const weight = STORE.get("weight") || [];
+  if (!weight.length) return null;
+  const inWeek = weight.filter(w => w.date >= ws && w.date <= we).sort((a, b) => a.date.localeCompare(b.date));
+  const before = weight.filter(w => w.date < ws).sort((a, b) => a.date.localeCompare(b.date));
+  let startVal = null, endVal = null;
+  if (before.length) startVal = before[before.length - 1].value;
+  else if (inWeek.length) startVal = inWeek[0].value;
+  if (inWeek.length) endVal = inWeek[inWeek.length - 1].value;
+  else if (before.length) endVal = before[before.length - 1].value;
+  if (startVal == null || endVal == null) return null;
+  const delta = +(startVal - endVal).toFixed(1);
+  return { delta };
+}
 
 function renderWeekPreview() {
   const el = $("#weekPreview");
@@ -3888,31 +3906,13 @@ function renderWeekPreview() {
   const money = STORE.get("money").filter(m => m.date >= weekStart && m.date <= weekEnd);
   const income = money.filter(m => m.type === "income").reduce((s, x) => s + x.amount, 0);
   const expense = money.filter(m => m.type === "expense").reduce((s, x) => s + x.amount, 0);
-  const weight = STORE.get("weight") || [];
-  // 严格筛选本周区间内的体重记录，按日期升序排序，取最早与最晚对比
-  const weekWeights = weight
-    .filter(w => w.date >= weekStart && w.date <= weekEnd)
-    .sort((a, b) => a.date.localeCompare(b.date));
+  const ch = weekWeightChange(weekStart, weekEnd);
   let wDeltaText = "--";
   let wDeltaColor = "#888";
-  if (weekWeights.length >= 2) {
-    const delta = +(weekWeights[0].value - weekWeights[weekWeights.length - 1].value).toFixed(1);
-    if (delta > 0) { wDeltaText = "减重 " + delta + " kg"; wDeltaColor = "#3a8a3a"; }
-    else if (delta < 0) { wDeltaText = "增重 " + Math.abs(delta) + " kg"; wDeltaColor = "#c0392b"; }
+  if (ch) {
+    if (ch.delta > 0) { wDeltaText = "减重 " + ch.delta + " kg"; wDeltaColor = "#3a8a3a"; }
+    else if (ch.delta < 0) { wDeltaText = "增重 " + Math.abs(ch.delta) + " kg"; wDeltaColor = "#c0392b"; }
     else { wDeltaText = "无变化"; wDeltaColor = "#888"; }
-  } else if (weekWeights.length === 1) {
-    // 本周仅1条：用本周之前最近一条历史记录作为基准对比，避免误报“记录不足”
-    const before = weight
-      .filter(w => w.date < weekStart)
-      .sort((a, b) => a.date.localeCompare(b.date));
-    if (before.length) {
-      const delta = +(before[before.length - 1].value - weekWeights[0].value).toFixed(1);
-      if (delta > 0) { wDeltaText = "减重 " + delta + " kg"; wDeltaColor = "#3a8a3a"; }
-      else if (delta < 0) { wDeltaText = "增重 " + Math.abs(delta) + " kg"; wDeltaColor = "#c0392b"; }
-      else { wDeltaText = "无变化"; wDeltaColor = "#888"; }
-    } else {
-      wDeltaText = "记录不足";
-    }
   }
 
   el.innerHTML = `
@@ -3926,6 +3926,11 @@ function renderWeekPreview() {
       <div class="dash-card"><div class="dc-emoji">${ic('trendDown')}</div><div class="dc-label">本周支出</div><div class="dc-num" style="color:#c66;font-size:15px">-${expense.toFixed(0)}</div></div>
     </div>
   `;
+  // 自动填充“写周总结”里的体重变化（按现有约定：涨为负），减少手动填错正负号
+  const wInput = $("#wWeight");
+  if (wInput && !wInput.value.trim()) wInput.value = ch ? ch.delta : "";
+  const wHint = $("#wWeightHint");
+  if (wHint) wHint.textContent = ch ? ("本周自动计算：" + wDeltaText) : "暂无体重记录，可手动填写";
 }
 
 window.weeklyAdd = function() {
