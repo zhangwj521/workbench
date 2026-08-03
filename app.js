@@ -3862,20 +3862,30 @@ renderWeekly = function() {
 };
 PAGES.weekly = renderWeekly;
 
-// 计算某时间区间内的体重变化：以“周初基准(周一之前最近一条/否则本周首条)”对比“区间最末一条”
-// 返回 { delta(正=减重 / 负=增重) } 或 null（无数据）
+// 计算某周的体重变化：用“本周起点体重”对比“上周起点体重”（周同比）
+// 起点体重优先取该周区间内的最早一条；若该周暂无记录，则取该周开始前最近一条
+// 返回 { delta(正=减重 / 负=增重) } 或 null（无足够数据）
 function weekWeightChange(ws, we) {
   const weight = STORE.get("weight") || [];
   if (!weight.length) return null;
-  const inWeek = weight.filter(w => w.date >= ws && w.date <= we).sort((a, b) => a.date.localeCompare(b.date));
-  const before = weight.filter(w => w.date < ws).sort((a, b) => a.date.localeCompare(b.date));
-  let startVal = null, endVal = null;
-  if (before.length) startVal = before[before.length - 1].value;
-  else if (inWeek.length) startVal = inWeek[0].value;
-  if (inWeek.length) endVal = inWeek[inWeek.length - 1].value;
-  else if (before.length) endVal = before[before.length - 1].value;
-  if (startVal == null || endVal == null) return null;
-  const delta = +(startVal - endVal).toFixed(1);
+  const prevStartDate = new Date(ws);
+  prevStartDate.setDate(prevStartDate.getDate() - 7);
+  const prevEndDate = new Date(prevStartDate);
+  prevEndDate.setDate(prevEndDate.getDate() + 6);
+  const pws = fmtDate(prevStartDate);
+  const pwe = fmtDate(prevEndDate);
+
+  const startOf = (start, end) => {
+    const inRange = weight.filter(w => w.date >= start && w.date <= end).sort((a, b) => a.date.localeCompare(b.date));
+    if (inRange.length) return inRange[0].value;
+    const before = weight.filter(w => w.date < start).sort((a, b) => a.date.localeCompare(b.date));
+    return before.length ? before[before.length - 1].value : null;
+  };
+
+  const thisStart = startOf(ws, we);
+  const prevStart = startOf(pws, pwe);
+  if (thisStart == null || prevStart == null) return null;
+  const delta = +(prevStart - thisStart).toFixed(1);
   return { delta };
 }
 
