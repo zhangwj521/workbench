@@ -3249,15 +3249,17 @@ function renderDiet() {
         </div>
       </div>
 
-      <div style="display:flex;gap:10px;margin-top:10px">
-        <div style="flex:1;background:#F5F1FC;border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px">
-          <span style="font-size:12px;color:#7B6BA6">初始体重</span>
-          <span style="font-size:18px;font-weight:800;color:#8B7EC7">${initialW ? initialW.value : "--"}<span style="font-size:11px;font-weight:600;color:#8E82A8"> kg</span></span>
-          ${initialW ? `<span style="font-size:10px;color:#B0A5C9">${initialW.date}</span>` : ""}
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+        <div style="flex:1;min-width:130px;background:#F5F1FC;border-radius:12px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+          <span style="font-size:11px;color:#7B6BA6;white-space:nowrap">初始体重</span>
+          <div style="font-size:20px;font-weight:800;color:#8B7EC7;line-height:1.2;margin:4px 0">
+            ${initialW ? initialW.value : "--"}<span style="font-size:11px;font-weight:600;color:#8E82A8"> kg</span>
+          </div>
+          ${initialW ? `<span style="font-size:10px;color:#B0A5C9;white-space:nowrap">${initialW.date.slice(5)}</span>` : ""}
         </div>
-        <div style="flex:1;background:#F5F1FC;border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px">
-          <span style="font-size:12px;color:#7B6BA6">当前变化</span>
-          <span style="font-size:18px;font-weight:800;color:${diffColor}">${diffText || "--"}</span>
+        <div style="flex:1;min-width:130px;background:#F5F1FC;border-radius:12px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+          <span style="font-size:11px;color:#7B6BA6;white-space:nowrap">当前变化</span>
+          <div style="font-size:18px;font-weight:800;color:${diffColor};line-height:1.2;margin:4px 0;white-space:nowrap">${diffText || "--"}</div>
         </div>
       </div>
 
