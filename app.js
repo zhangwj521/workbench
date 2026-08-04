@@ -3233,13 +3233,13 @@ function renderDiet() {
 
     <div class="card">
       <div class="card-title"><span class="icon">${ic('scale')}</span><span>体重记录</span></div>
-      <div class="row" style="margin-bottom:10px">
+      <div class="row" style="margin-bottom:10px;align-items:stretch">
         <input class="input" id="wVal" type="number" step="0.1" placeholder="体重 kg" value="${wRec ? wRec.value : ""}" style="flex:1;min-width:0">
         <input class="input" id="wDate" type="date" value="${key}" style="flex:none;width:130px">
       </div>
       <div class="row" style="margin-bottom:10px">
-        <button class="btn" onclick="weightAdd()" style="flex:1">保存</button>
-        <button class="btn btn-danger" onclick="weightDel()" style="flex:1">删除</button>
+        <button class="btn" onclick="weightAdd()" style="flex:1;padding:12px;min-height:46px;justify-content:center;font-size:14px">保存</button>
+        <button class="btn btn-danger" onclick="weightDel()" style="flex:1;padding:12px;min-height:46px;justify-content:center;font-size:14px">删除</button>
       </div>
 
       <div style="background:linear-gradient(135deg,#8B7EC7,#9B8ED8);border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 6px 18px rgba(139,126,199,0.22);margin-bottom:4px">
