@@ -3224,7 +3224,7 @@ function renderDiet() {
 
   return `
     <div class="card">
-      ${buildCalendar({ sel: dietSel, prevFn: "dietMonthStep(-1)", nextFn: "dietMonthStep(1)", selectFn: "selectDietDay", hasMap: dietHas, disableFuture: true })}
+      ${buildCalendar({ sel: dietSel, prevFn: "dietMonthStep(-1)", nextFn: "dietMonthStep(1)", selectFn: "selectDietDay", hasMap: dietHas, disableFuture: false })}
       <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:6px">
         <span style="font-size:13px;color:#7B6BA6">当日摄入</span>
         <span style="font-size:22px;font-weight:800;color:#8B7EC7">${dayKcal}<span style="font-size:13px;font-weight:600"> 千卡</span></span>
@@ -3235,7 +3235,7 @@ function renderDiet() {
       <div class="card-title"><span class="icon">${ic('scale')}</span><span>体重记录</span></div>
       <div class="row" style="margin-bottom:10px">
         <input class="input" id="wVal" type="number" step="0.1" placeholder="体重 kg" value="${wRec ? wRec.value : ""}">
-        <input class="input" id="wDate" type="date" value="${key}" max="${today()}" style="max-width:140px">
+        <input class="input" id="wDate" type="date" value="${key}" style="max-width:140px">
         <button class="btn" onclick="weightAdd()">保存</button>
       </div>
 
@@ -3335,7 +3335,6 @@ window.weightAdd = function() {
   const val = parseFloat($("#wVal").value);
   const date = $("#wDate").value || today();
   if (!val) return alert("请输入体重");
-  if (date > today()) return alert("不能记录未来的日期");
   const list = STORE.get("weight");
   const exist = list.findIndex(x => x.date === date);
   if (exist >= 0) list[exist].value = val;
@@ -3388,7 +3387,7 @@ function renderSport() {
 
   return `
     <div class="card">
-      ${buildCalendar({ sel: sportSel, prevFn: "sportMonthStep(-1)", nextFn: "sportMonthStep(1)", selectFn: "selectSportDay", hasMap: sportHas, disableFuture: true })}
+      ${buildCalendar({ sel: sportSel, prevFn: "sportMonthStep(-1)", nextFn: "sportMonthStep(1)", selectFn: "selectSportDay", hasMap: sportHas, disableFuture: false })}
       <div class="card-title"><span class="icon">${ic('activity')}</span><span>运动数据</span></div>
       <div class="dash-grid" style="grid-template-columns: repeat(2, 1fr);">
         <div class="dash-card"><div class="dc-emoji">${ic('flame')}</div><div class="dc-label">当日消耗</div><div class="dc-num">${dayCal} 千卡</div></div>
@@ -3406,7 +3405,7 @@ function renderSport() {
         <input class="input" id="sCal" type="number" placeholder="千卡">
       </div>
       <div class="row" style="margin-bottom:8px">
-        <input class="input" id="sDate" type="date" value="${key}" max="${today()}">
+        <input class="input" id="sDate" type="date" value="${key}">
         <input class="input" id="sNote" placeholder="备注" style="flex:2">
       </div>
       <div class="row" style="margin-bottom:8px">
@@ -3427,7 +3426,6 @@ window.sportAdd = function() {
   const date = $("#sDate").value || today();
   const note = $("#sNote").value.trim();
   if (!min) return alert("请填写时长");
-  if (date > today()) return alert("不能记录未来的日期");
   const list = STORE.get("sport");
   list.push({ type, min, cal, date, note });
   STORE.set("sport", list);
@@ -3484,7 +3482,7 @@ function renderMoney() {
 
   return `
     <div class="card">
-      ${buildCalendar({ sel: moneySel, prevFn: "moneyMonthStep(-1)", nextFn: "moneyMonthStep(1)", selectFn: "selectMoneyDay", hasMap: moneyHas, disableFuture: true })}
+      ${buildCalendar({ sel: moneySel, prevFn: "moneyMonthStep(-1)", nextFn: "moneyMonthStep(1)", selectFn: "selectMoneyDay", hasMap: moneyHas, disableFuture: false })}
       <div class="card-title"><span class="icon">${ic('wallet')}</span><span>收支概览</span></div>
       <div class="dash-grid" style="grid-template-columns: repeat(2, 1fr);">
         <div class="dash-card"><div class="dc-emoji">${ic('calendar')}</div><div class="dc-label">当日收入</div><div class="dc-num" style="color:#3a8a3a">+${dayIn.toFixed(2)}</div></div>
@@ -3505,7 +3503,7 @@ function renderMoney() {
         <select class="select" id="mCategory"></select>
       </div>
       <div class="row" style="margin-bottom:8px">
-        <input class="input" id="mDate" type="date" value="${key}" max="${today()}">
+        <input class="input" id="mDate" type="date" value="${key}">
         <input class="input" id="mNote" placeholder="备注" style="flex:2">
       </div>
       <div class="row" style="margin-bottom:8px">
@@ -3542,7 +3540,6 @@ window.moneyAdd = function() {
   const date = $("#mDate").value || today();
   const note = $("#mNote").value.trim();
   if (!amount) return alert("请输入金额");
-  if (date > today()) return alert("不能记录未来的日期");
   const list = STORE.get("money");
   list.push({ type: currentMoneyType, amount, category, date, note });
   STORE.set("money", list);
