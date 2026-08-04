@@ -3350,12 +3350,19 @@ window.weightDel = function() {
   const date = $("#wDate").value || today();
   const list = STORE.get("weight");
   const idx = list.findIndex(x => x.date === date);
-  if (idx < 0) return alert("该日期没有体重记录");
-  if (!confirm("确定删除 " + date + " 的体重记录吗？")) return;
-  list.splice(idx, 1);
-  list.sort((a, b) => a.date.localeCompare(b.date));
-  STORE.set("weight", list);
-  go("diet");
+  if (idx < 0) {
+    return _showModal("提示", "该日期没有体重记录", [{ text: "知道了", value: true, primary: true }]);
+  }
+  _showModal("确认删除", "确定删除 " + date + " 的体重记录吗？", [
+    { text: "取消", value: false, primary: false },
+    { text: "删除", value: true, primary: true }
+  ]).then(ok => {
+    if (!ok) return;
+    list.splice(idx, 1);
+    list.sort((a, b) => a.date.localeCompare(b.date));
+    STORE.set("weight", list);
+    go("diet");
+  });
 };
 // =================== 运动 ===================
 function renderSport() {
