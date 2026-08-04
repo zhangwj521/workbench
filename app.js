@@ -3237,6 +3237,7 @@ function renderDiet() {
         <input class="input" id="wVal" type="number" step="0.1" placeholder="体重 kg" value="${wRec ? wRec.value : ""}">
         <input class="input" id="wDate" type="date" value="${key}" style="max-width:140px">
         <button class="btn" onclick="weightAdd()">保存</button>
+        <button class="btn btn-danger" onclick="weightDel()">删除</button>
       </div>
 
       <div style="background:linear-gradient(135deg,#8B7EC7,#9B8ED8);border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 6px 18px rgba(139,126,199,0.22);margin-bottom:4px">
@@ -3339,6 +3340,17 @@ window.weightAdd = function() {
   const exist = list.findIndex(x => x.date === date);
   if (exist >= 0) list[exist].value = val;
   else list.push({ date, value: val });
+  list.sort((a, b) => a.date.localeCompare(b.date));
+  STORE.set("weight", list);
+  go("diet");
+};
+window.weightDel = function() {
+  const date = $("#wDate").value || today();
+  const list = STORE.get("weight");
+  const idx = list.findIndex(x => x.date === date);
+  if (idx < 0) return alert("该日期没有体重记录");
+  if (!confirm("确定删除 " + date + " 的体重记录吗？")) return;
+  list.splice(idx, 1);
   list.sort((a, b) => a.date.localeCompare(b.date));
   STORE.set("weight", list);
   go("diet");
