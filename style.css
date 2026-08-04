@@ -797,16 +797,13 @@ a.ai-news-item .li-title { line-height: 1.4; }
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x mandatory;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   padding-bottom: 4px;
   margin: 0 -4px;
 }
 .weight-trend-scroll::-webkit-scrollbar {
-  height: 5px;
-}
-.weight-trend-scroll::-webkit-scrollbar-thumb {
-  background: rgba(139,126,199,0.35);
-  border-radius: 3px;
+  display: none;
 }
 .weight-trend-track {
   display: flex;
